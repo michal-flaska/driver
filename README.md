@@ -68,3 +68,6 @@ names say it all
 ## contact
 
 discord: @michal.flaska
+
+## Support me
+- **BTC:** `bc1qr8x3k39mn7sz2l9kyk8j8293xf5spm2wsxymh9`
