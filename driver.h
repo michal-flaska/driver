@@ -1,60 +1,49 @@
 #pragma once
-#include <ntddk.h>
-#include <wdm.h>
-#include <ntdef.h>
-#include <ntstrsafe.h>
 
-// Undocumented structures
+// corrected include order for kernel drivers
+#include <ntifs.h>
+#include <ntddk.h>
+#include <windef.h>
+
+// undocumented structures
 typedef struct _SYSTEM_PROCESS_INFORMATION {
     ULONG NextEntryOffset;
     ULONG NumberOfThreads;
-    BYTE Reserved1[48];
+    LARGE_INTEGER Reserved1[3];
+    LARGE_INTEGER CreateTime;
+    LARGE_INTEGER UserTime;
+    LARGE_INTEGER KernelTime;
     UNICODE_STRING ImageName;
     KPRIORITY BasePriority;
     HANDLE UniqueProcessId;
-    PVOID Reserved2;
+    HANDLE InheritedFromUniqueProcessId;
     ULONG HandleCount;
     ULONG SessionId;
-    PVOID Reserved3;
+    ULONG_PTR PageDirectoryBase;
     SIZE_T PeakVirtualSize;
     SIZE_T VirtualSize;
-    ULONG Reserved4;
+    ULONG PageFaultCount;
     SIZE_T PeakWorkingSetSize;
     SIZE_T WorkingSetSize;
-    PVOID Reserved5;
+    SIZE_T QuotaPeakPagedPoolUsage;
     SIZE_T QuotaPagedPoolUsage;
-    PVOID Reserved6;
+    SIZE_T QuotaPeakNonPagedPoolUsage;
     SIZE_T QuotaNonPagedPoolUsage;
     SIZE_T PagefileUsage;
     SIZE_T PeakPagefileUsage;
     SIZE_T PrivatePageCount;
-    LARGE_INTEGER Reserved7[6];
 } SYSTEM_PROCESS_INFORMATION, * PSYSTEM_PROCESS_INFORMATION;
 
 typedef enum _SYSTEM_INFORMATION_CLASS {
     SystemProcessInformation = 5
 } SYSTEM_INFORMATION_CLASS;
 
-// External declarations
-NTKERNELAPI NTSTATUS NTAPI ZwQuerySystemInformation(
-    SYSTEM_INFORMATION_CLASS SystemInformationClass,
-    PVOID SystemInformation,
-    ULONG SystemInformationLength,
-    PULONG ReturnLength
-);
-
-NTKERNELAPI NTSTATUS NTAPI PsLookupProcessByProcessId(
-    HANDLE ProcessId,
-    PEPROCESS* Process
-);
-
-NTKERNELAPI VOID NTAPI KeStackAttachProcess(
-    PEPROCESS Process,
-    PKAPC_STATE ApcState
-);
-
-NTKERNELAPI VOID NTAPI KeUnstackDetachProcess(
-    PKAPC_STATE ApcState
+// External kernel functions
+NTKERNELAPI NTSTATUS ZwQuerySystemInformation(
+    IN SYSTEM_INFORMATION_CLASS SystemInformationClass,
+    OUT PVOID SystemInformation,
+    IN ULONG SystemInformationLength,
+    OUT PULONG ReturnLength OPTIONAL
 );
 
 // IOCTL codes
