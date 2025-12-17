@@ -91,7 +91,7 @@ NTSTATUS GetProcessIdByName(PWCH ProcessName, PULONG ProcessId) {
         return status;
     }
 
-    buffer = ExAllocatePoolWithTag(NonPagedPool, bufferSize, 'prcS');
+    buffer = ExAllocatePool2(POOL_FLAG_NON_PAGED, bufferSize, 'prcS');
     if (!buffer) {
         return STATUS_INSUFFICIENT_RESOURCES;
     }
