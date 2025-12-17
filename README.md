@@ -1,4 +1,4 @@
-# kernel driver. ring 0. read write shit.
+# my kernel driver
 
 im NOT responsible for what u do with this. u fuck up ur pc or get banned thats on u.<br />
 built while learning windows kernel and low level c
