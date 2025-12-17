@@ -7,43 +7,43 @@
 
 // undocumented structures
 typedef struct _SYSTEM_PROCESS_INFORMATION {
-        ULONG NextEntryOffset;
-        ULONG NumberOfThreads;
-        LARGE_INTEGER Reserved1[3];
-        LARGE_INTEGER CreateTime;
-        LARGE_INTEGER UserTime;
-        LARGE_INTEGER KernelTime;
-        UNICODE_STRING ImageName;
-        KPRIORITY BasePriority;
-        HANDLE UniqueProcessId;
-        HANDLE InheritedFromUniqueProcessId;
-        ULONG HandleCount;
-        ULONG SessionId;
-        ULONG_PTR PageDirectoryBase;
-        SIZE_T PeakVirtualSize;
-        SIZE_T VirtualSize;
-        ULONG PageFaultCount;
-        SIZE_T PeakWorkingSetSize;
-        SIZE_T WorkingSetSize;
-        SIZE_T QuotaPeakPagedPoolUsage;
-        SIZE_T QuotaPagedPoolUsage;
-        SIZE_T QuotaPeakNonPagedPoolUsage;
-        SIZE_T QuotaNonPagedPoolUsage;
-        SIZE_T PagefileUsage;
-        SIZE_T PeakPagefileUsage;
-        SIZE_T PrivatePageCount;
+	ULONG NextEntryOffset;
+	ULONG NumberOfThreads;
+	LARGE_INTEGER Reserved1[3];
+	LARGE_INTEGER CreateTime;
+	LARGE_INTEGER UserTime;
+	LARGE_INTEGER KernelTime;
+	UNICODE_STRING ImageName;
+	KPRIORITY BasePriority;
+	HANDLE UniqueProcessId;
+	HANDLE InheritedFromUniqueProcessId;
+	ULONG HandleCount;
+	ULONG SessionId;
+	ULONG_PTR PageDirectoryBase;
+	SIZE_T PeakVirtualSize;
+	SIZE_T VirtualSize;
+	ULONG PageFaultCount;
+	SIZE_T PeakWorkingSetSize;
+	SIZE_T WorkingSetSize;
+	SIZE_T QuotaPeakPagedPoolUsage;
+	SIZE_T QuotaPagedPoolUsage;
+	SIZE_T QuotaPeakNonPagedPoolUsage;
+	SIZE_T QuotaNonPagedPoolUsage;
+	SIZE_T PagefileUsage;
+	SIZE_T PeakPagefileUsage;
+	SIZE_T PrivatePageCount;
 } SYSTEM_PROCESS_INFORMATION, * PSYSTEM_PROCESS_INFORMATION;
 
 typedef enum _SYSTEM_INFORMATION_CLASS {
-        SystemProcessInformation = 5
+	SystemProcessInformation = 5
 } SYSTEM_INFORMATION_CLASS;
 
 // External kernel functions
 NTKERNELAPI NTSTATUS ZwQuerySystemInformation(
-        IN SYSTEM_INFORMATION_CLASS SystemInformationClass,
-        OUT PVOID SystemInformation,
-        IN ULONG SystemInformationLength,
-        OUT PULONG ReturnLength OPTIONAL
+	IN SYSTEM_INFORMATION_CLASS SystemInformationClass,
+	OUT PVOID SystemInformation,
+	IN ULONG SystemInformationLength,
+	OUT PULONG ReturnLength OPTIONAL
 );
 
 // IOCTL codes
@@ -54,15 +54,15 @@ NTKERNELAPI NTSTATUS ZwQuerySystemInformation(
 
 // Structures
 typedef struct _READ_WRITE_REQUEST {
-        ULONG ProcessId;
-        PVOID Address;
-        PVOID Buffer;
-        SIZE_T Size;
+	ULONG ProcessId;
+	PVOID Address;
+	PVOID Buffer;
+	SIZE_T Size;
 } READ_WRITE_REQUEST, * PREAD_WRITE_REQUEST;
 
 typedef struct _PROCESS_REQUEST {
-        WCHAR ProcessName[260];
-        ULONG ProcessId;
+	WCHAR ProcessName[260];
+	ULONG ProcessId;
 } PROCESS_REQUEST, * PPROCESS_REQUEST;
 
 // Function declarations

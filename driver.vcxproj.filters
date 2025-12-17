@@ -37,7 +37,4 @@
   <ItemGroup>
     <CopyFileToFolders Include="README.md" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include=".editorconfig" />
-  </ItemGroup>
 </Project>
