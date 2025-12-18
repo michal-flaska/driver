@@ -1,3 +1,12 @@
+> [!CAUTION]
+> i used both the `bcdedit /set testsigning on` method and regedit because i had some errors.
+> 
+> and i got "your device ran into a problem" which is not really good, i did not get any other info...
+> 
+> and i dont really know, but disabling driver signature enforcement in windows is common, and detected by most anticheats. so i dont know if the current approach is good.
+> 
+> also i need to fix the driver. so please, dont use it
+
 # my kernel driver
 
 im NOT responsible for what u do with this. u fuck up ur pc or get banned thats on u.<br />
