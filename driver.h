@@ -1,11 +1,10 @@
 #pragma once
 
-// corrected include order for kernel drivers
 #include <ntifs.h>
 #include <ntddk.h>
 #include <windef.h>
 
-// undocumented structures
+// System structures
 typedef struct _SYSTEM_PROCESS_INFORMATION {
 	ULONG NextEntryOffset;
 	ULONG NumberOfThreads;
@@ -38,7 +37,6 @@ typedef enum _SYSTEM_INFORMATION_CLASS {
 	SystemProcessInformation = 5
 } SYSTEM_INFORMATION_CLASS;
 
-// External kernel functions
 NTKERNELAPI NTSTATUS ZwQuerySystemInformation(
 	IN SYSTEM_INFORMATION_CLASS SystemInformationClass,
 	OUT PVOID SystemInformation,
@@ -52,7 +50,7 @@ NTKERNELAPI NTSTATUS ZwQuerySystemInformation(
 #define IOCTL_WRITE_MEMORY CTL_CODE(FILE_DEVICE_UNKNOWN, IOCTL_BASE + 0x2, METHOD_BUFFERED, FILE_ANY_ACCESS)
 #define IOCTL_GET_PROCESS  CTL_CODE(FILE_DEVICE_UNKNOWN, IOCTL_BASE + 0x3, METHOD_BUFFERED, FILE_ANY_ACCESS)
 
-// Structures
+// Request structures
 typedef struct _READ_WRITE_REQUEST {
 	ULONG ProcessId;
 	PVOID Address;
@@ -65,12 +63,13 @@ typedef struct _PROCESS_REQUEST {
 	ULONG ProcessId;
 } PROCESS_REQUEST, * PPROCESS_REQUEST;
 
-// Function declarations
+// Driver functions
 NTSTATUS DriverEntry(PDRIVER_OBJECT DriverObject, PUNICODE_STRING RegistryPath);
 VOID DriverUnload(PDRIVER_OBJECT DriverObject);
 NTSTATUS CreateClose(PDEVICE_OBJECT DeviceObject, PIRP Irp);
 NTSTATUS IoControl(PDEVICE_OBJECT DeviceObject, PIRP Irp);
 
+// Memory operations
 NTSTATUS ReadProcessMemory(ULONG ProcessId, PVOID Address, PVOID Buffer, SIZE_T Size);
 NTSTATUS WriteProcessMemory(ULONG ProcessId, PVOID Address, PVOID Buffer, SIZE_T Size);
 NTSTATUS GetProcessIdByName(PWCH ProcessName, PULONG ProcessId);

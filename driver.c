@@ -1,11 +1,39 @@
 #include "driver.h"
 
+PDEVICE_OBJECT g_DeviceObject = NULL;
+
 NTSTATUS DriverEntry(PDRIVER_OBJECT DriverObject, PUNICODE_STRING RegistryPath) {
 	UNREFERENCED_PARAMETER(RegistryPath);
+	NTSTATUS status;
+	UNICODE_STRING deviceName = RTL_CONSTANT_STRING(L"\\Device\\MemDriver");
+	UNICODE_STRING symLink = RTL_CONSTANT_STRING(L"\\DosDevices\\MemDriver");
 
 	DbgPrint("[driver] Loading...\n");
 
-	// Set up function pointers
+	// Create device
+	status = IoCreateDevice(
+		DriverObject,
+		0,
+		&deviceName,
+		FILE_DEVICE_UNKNOWN,
+		FILE_DEVICE_SECURE_OPEN,
+		FALSE,
+		&g_DeviceObject
+	);
+
+	if (!NT_SUCCESS(status)) {
+		DbgPrint("[driver] IoCreateDevice failed: 0x%X\n", status);
+		return status;
+	}
+
+	// Create symbolic link
+	status = IoCreateSymbolicLink(&symLink, &deviceName);
+	if (!NT_SUCCESS(status)) {
+		DbgPrint("[driver] IoCreateSymbolicLink failed: 0x%X\n", status);
+		IoDeleteDevice(g_DeviceObject);
+		return status;
+	}
+
 	DriverObject->DriverUnload = DriverUnload;
 	DriverObject->MajorFunction[IRP_MJ_CREATE] = CreateClose;
 	DriverObject->MajorFunction[IRP_MJ_CLOSE] = CreateClose;
@@ -16,8 +44,16 @@ NTSTATUS DriverEntry(PDRIVER_OBJECT DriverObject, PUNICODE_STRING RegistryPath) 
 }
 
 VOID DriverUnload(PDRIVER_OBJECT DriverObject) {
-	UNREFERENCED_PARAMETER(DriverObject);
+	UNICODE_STRING symLink = RTL_CONSTANT_STRING(L"\\DosDevices\\MemDriver");
+
 	DbgPrint("[driver] Unloading...\n");
+
+	IoDeleteSymbolicLink(&symLink);
+	if (g_DeviceObject) {
+		IoDeleteDevice(g_DeviceObject);
+	}
+
+	UNREFERENCED_PARAMETER(DriverObject);
 }
 
 NTSTATUS CreateClose(PDEVICE_OBJECT DeviceObject, PIRP Irp) {
@@ -34,6 +70,7 @@ NTSTATUS IoControl(PDEVICE_OBJECT DeviceObject, PIRP Irp) {
 	UNREFERENCED_PARAMETER(DeviceObject);
 
 	NTSTATUS status = STATUS_SUCCESS;
+	ULONG bytesReturned = 0;
 	PIO_STACK_LOCATION stack = IoGetCurrentIrpStackLocation(Irp);
 	ULONG controlCode = stack->Parameters.DeviceIoControl.IoControlCode;
 
@@ -50,6 +87,9 @@ NTSTATUS IoControl(PDEVICE_OBJECT DeviceObject, PIRP Irp) {
 
 		PREAD_WRITE_REQUEST req = (PREAD_WRITE_REQUEST)buffer;
 		status = ReadProcessMemory(req->ProcessId, req->Address, req->Buffer, req->Size);
+		if (NT_SUCCESS(status)) {
+			bytesReturned = sizeof(READ_WRITE_REQUEST);
+		}
 		break;
 	}
 
@@ -72,6 +112,9 @@ NTSTATUS IoControl(PDEVICE_OBJECT DeviceObject, PIRP Irp) {
 
 		PPROCESS_REQUEST req = (PPROCESS_REQUEST)buffer;
 		status = GetProcessIdByName(req->ProcessName, &req->ProcessId);
+		if (NT_SUCCESS(status)) {
+			bytesReturned = sizeof(PROCESS_REQUEST);
+		}
 		break;
 	}
 
@@ -81,7 +124,7 @@ NTSTATUS IoControl(PDEVICE_OBJECT DeviceObject, PIRP Irp) {
 	}
 
 	Irp->IoStatus.Status = status;
-	Irp->IoStatus.Information = (NT_SUCCESS(status)) ? outSize : 0;
+	Irp->IoStatus.Information = bytesReturned;
 	IoCompleteRequest(Irp, IO_NO_INCREMENT);
 
 	return status;
